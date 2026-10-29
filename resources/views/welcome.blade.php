@@ -503,8 +503,8 @@
     addEventListener('resize',onScroll);
     frame();
   })();
-  // checkout placeholder until Stripe Payment Link is set
-  const STRIPE_LINKS={web:"__STRIPE_WEB__",tienda:"__STRIPE_TIENDA__"};
+  // Stripe Payment Links (THWORK 3000 SL, suscripción mensual)
+  const STRIPE_LINKS={web:"https://buy.stripe.com/5kQ9ATfvackf66i25reEo09",tienda:"https://buy.stripe.com/bJe6oH2Io3NJ8eq7pLeEo0a"};
   document.querySelectorAll('[data-checkout]').forEach(b=>b.addEventListener('click',(ev)=>{
     const key=b.getAttribute('data-checkout')||'web';
     const url=STRIPE_LINKS[key]||'';
