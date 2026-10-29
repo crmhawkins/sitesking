@@ -147,6 +147,11 @@
   .plist li svg{flex:0 0 auto;width:20px;height:20px;stroke:var(--accent);fill:none;stroke-width:2;margin-top:2px}
   .price-card .btn{width:100%;justify-content:center}
   .price-fine{font-size:12.8px;color:var(--muted-2);margin-top:14px}
+  .price-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;max-width:820px;margin:46px auto 0;text-align:left}
+  .price-grid .price-card{width:auto;margin:0;text-align:left}
+  .plan-name{display:block;font-size:14.5px;font-weight:700;color:var(--muted);letter-spacing:.02em;margin:2px 0 4px}
+  .price-card.featured{border-color:rgba(86,184,232,.55);background:radial-gradient(130% 100% at 50% 0%,rgba(86,184,232,.18),transparent 55%),var(--surface)}
+  @media(max-width:720px){.price-grid{grid-template-columns:1fr}}
 
   /* faq */
   .faq{max-width:780px;margin:44px auto 0}
@@ -363,24 +368,36 @@
         <h2>Un precio. Todo dentro.</h2>
         <p class="lead">Sin pago inicial. Sin permanencia. Cancelas cuando quieras.</p>
       </div>
-      <div class="price-wrap">
+      <div class="price-grid">
         <div class="price-card reveal">
-          <span class="tag">Todo incluido</span>
+          <span class="plan-name">Web profesional</span>
           <div class="amount">29&nbsp;€<small>/mes</small></div>
-          <div class="note">IVA no incluido · sin permanencia</div>
+          <div class="note">IVA no incl. · sin permanencia</div>
           <ul class="plist">
-            <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Web profesional a medida con IA</li>
+            <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Web a medida con IA</li>
             <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Panel de control autogestionable</li>
             <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Servidor, dominio y SSL incluidos</li>
             <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Actualizaciones y soporte continuo</li>
             <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Optimización para Google e IA</li>
-            <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Sin permanencia · cancelas cuando quieras</li>
           </ul>
-          <!-- TODO: sustituir href por el Payment Link de Stripe (suscripción 29€/mes) -->
-          <a class="btn btn-primary btn-lg" href="#contratar" data-checkout>Empezar ahora &nbsp;→</a>
-          <div class="price-fine">Pago seguro con Stripe · Cancelación en un clic · Sin letra pequeña</div>
+          <a class="btn btn-ghost btn-lg" href="#contratar" data-checkout="web">Empezar &nbsp;→</a>
+        </div>
+        <div class="price-card featured reveal">
+          <span class="tag">Vende online</span>
+          <span class="plan-name">Web + Tienda online</span>
+          <div class="amount">34,99&nbsp;€<small>/mes</small></div>
+          <div class="note">IVA no incl. · sin permanencia</div>
+          <ul class="plist">
+            <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> <b>Todo lo del plan Web</b>, y además:</li>
+            <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Tienda online con carrito y pagos</li>
+            <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Productos y pedidos ilimitados</li>
+            <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Pasarela de pago y gestión de stock</li>
+            <li><svg viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg> Cobra 24/7 desde tu propia web</li>
+          </ul>
+          <a class="btn btn-primary btn-lg" href="#contratar" data-checkout="tienda">Quiero vender &nbsp;→</a>
         </div>
       </div>
+      <div class="price-fine" style="margin-top:18px">Pago seguro con Stripe · Cancelación en un clic · Sin letra pequeña</div>
     </div>
   </section>
 
@@ -406,8 +423,7 @@
         <h2>Tu web profesional, funcionando esta semana.</h2>
         <p class="lead" style="margin-inline:auto">29&nbsp;€/mes, todo incluido, sin ataduras. Si pagas más, es porque quieres.</p>
         <div class="hero-cta" style="justify-content:center">
-          <!-- TODO: sustituir href por el Payment Link de Stripe -->
-          <a class="btn btn-primary btn-lg" href="#" data-checkout>Quiero mi web · 29€/mes</a>
+          <a class="btn btn-primary btn-lg" href="#precio" data-checkout="web">Quiero mi web · desde 29€/mes</a>
           <a class="btn btn-ghost btn-lg" href="https://hawkins.es" target="_blank" rel="noopener">Hablar con el equipo</a>
         </div>
       </div>
@@ -488,11 +504,13 @@
     frame();
   })();
   // checkout placeholder until Stripe Payment Link is set
-  const STRIPE_LINK=""; // <-- pegar aquí el Payment Link de Stripe (suscripción 29€/mes)
+  const STRIPE_LINKS={web:"__STRIPE_WEB__",tienda:"__STRIPE_TIENDA__"};
   document.querySelectorAll('[data-checkout]').forEach(b=>b.addEventListener('click',(ev)=>{
-    if(STRIPE_LINK){location.href=STRIPE_LINK;return;}
+    const key=b.getAttribute('data-checkout')||'web';
+    const url=STRIPE_LINKS[key]||'';
+    if(url && url.indexOf('http')===0){location.href=url;return;}
     ev.preventDefault();
-    document.getElementById('contratar').scrollIntoView({behavior:'smooth'});
+    document.getElementById('precio').scrollIntoView({behavior:'smooth'});
   }));
 </script>
 </body>
